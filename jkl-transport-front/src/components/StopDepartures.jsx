@@ -6,8 +6,12 @@ const PrintStopDepartures = ({ tripUpdates, stopId, setStopDepartures }) => {
 
   for (let i = 0; i < tripUpdates.length; i++)
     {
-      for (let j = 0; j < tripUpdates[i].tripUpdate.stopTimeUpdate.length; j++)
+      for (let j = 0; j < tripUpdates[i].tripUpdate.stopTimeUpdate.length - 1; j++)
         {
+          /*console.log(new Date(tripUpdates[i].tripUpdate.stopTimeUpdate[j].departure.time * 1000).toLocaleTimeString('fi-FI', {
+            hour: '2-digit',
+            minute: '2-digit'
+          }))*/
           //console.log('Ylioppilaskylä stop ID: ', stopId)
           //console.log('current stop id: ' ,tripUpdates[i].tripUpdate.stopTimeUpdate[j].stopId)
           if (String(stopId) === String(tripUpdates[i].tripUpdate.stopTimeUpdate[j].stopId))
@@ -17,7 +21,7 @@ const PrintStopDepartures = ({ tripUpdates, stopId, setStopDepartures }) => {
                 tripUpdates[i].tripUpdate.stopTimeUpdate[j].departure.time
               )
             }
-          if (String(207381) === String(tripUpdates[i].tripUpdate.stopTimeUpdate[j].stopId))
+          if (String(207426) === String(tripUpdates[i].tripUpdate.stopTimeUpdate[j].stopId))
             {
               testStopDepartureMap.set(
                 tripUpdates[i].tripUpdate.trip.routeId,
@@ -28,10 +32,12 @@ const PrintStopDepartures = ({ tripUpdates, stopId, setStopDepartures }) => {
     }
   console.log('Stop departures as a map: ',  stopDepartureMap)
   console.log('Test stop departures as a map: ', testStopDepartureMap)
+  console.log('TripUpdate length: ', tripUpdates.length)
+  console.log('Tripupdate stoptimeUpdate length: ', tripUpdates[0]?.tripUpdate.stopTimeUpdate.length)
 
   return (
     <ul>
-      {[...stopDepartureMap.entries()].map(([routeId, time]) =>(
+      {[...testStopDepartureMap.entries()].map(([routeId, time]) =>(
         <li key={routeId}>
           Route {routeId}: {new Date(time * 1000).toLocaleTimeString('fi-FI', {
             hour: '2-digit',
