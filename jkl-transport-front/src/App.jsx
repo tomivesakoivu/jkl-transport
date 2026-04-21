@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import PrintStopDepartures from './components/StopDepartures'
+//import DropDownButton from './components/DropDownButton'
 import GtfsRealtimeBindings from 'gtfs-realtime-bindings'
 import axios from 'axios'
 
@@ -7,7 +8,9 @@ const App = () => {
   const [tripUpdates, setTripUpdates] = useState([])
   const [vehiclePositions, setVehiclePositions] = useState([])
   const [stopDepartures, setStopDepartures] = useState({})
-  const YLIOPPILASKYLA_STOP_ID = 207532
+  const [currentStop, setCurrentStop] = useState('')
+  const YLIOPPILASKYLA_STOP_ID = '207532'
+  const KESKUSTA_1_STOP_ID = '207426'
 
   const getTripUpdate = () => {
     axios
@@ -71,13 +74,14 @@ const App = () => {
     console.log(stopDepartureArray)
   }
 
+
   return (
     <div>
       <h1>Jyväskylä Realtime Public Transport App</h1>
       <button onClick={stopSchedule}>
         Console print test
       </button>
-      <h2>Ylioppilaskylä Live Departures</h2>
+      <h2>Keskusta 1 live departures</h2>
       <PrintStopDepartures
         tripUpdates={tripUpdates}
         stopId={YLIOPPILASKYLA_STOP_ID}
