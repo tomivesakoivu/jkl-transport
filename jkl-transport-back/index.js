@@ -14,6 +14,20 @@ const CLIENT_SECRET = process.env.CLIENT_SECRET
 
 const auth = Buffer.from(`${CLIENT_ID}:${CLIENT_SECRET}`).toString("base64")
 
+/*app.get("/api/staticgtfs", async (req, res) => {
+  try {
+    const response = await axios.get(
+      "https://tvv.fra1.digitaloceanspaces.com/209.zip"
+    )
+    res.send(response.data)
+  } catch (err) {
+    console.error(err)
+    if (!response?.data) {
+      res.status(500).json({ error: "Failed to fetch GTFS data"})
+    }
+  }
+})*/
+
 app.get("/api/tripupdate", async (req, res) => {
   try {
     const response = await axios.get(
