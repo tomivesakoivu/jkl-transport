@@ -25,6 +25,7 @@ const App = () => {
   }
 
   useEffect(() => {
+    console.log("Getting trip updates")
     getTripUpdate()
   }, [])
 
@@ -47,6 +48,7 @@ const App = () => {
   }
 
   useEffect(() => {
+    console.log("Getting vehicle positions")
     getVehiclePosition()
   }, [])
 
@@ -54,7 +56,7 @@ const App = () => {
     <div>
       <h1>Jyväskylä Realtime Public Transport App</h1>
       <p>API:s first vehicle's licence plate:</p>
-      <p>{vehiclePositions[0].vehicle.vehicle.licensePlate}</p>
+
     </div>
   )
 }
