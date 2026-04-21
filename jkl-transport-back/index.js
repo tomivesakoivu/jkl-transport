@@ -122,6 +122,53 @@ app.get('/api/vehicleposition/json', async (req, res) => {
   }
 })
 
+app.get("/api/servicealert", async (req, res) => {
+  try {
+    const response = await axios.get(
+      "https://data.waltti.fi/jyvaskyla/api/gtfsrealtime/v1.0/feed/servicealert",
+      {
+        responseType: "arraybuffer",
+        headers: {
+          Authorization: `Basic ${auth}`,
+        },
+      }
+    )
+
+    res.send(response.data)
+  } catch (err) {
+    console.error(err)
+    if (!response?.data) {
+      res.status(500).json({ error: "Failed to fetch GTFS data"})
+    }
+  }
+})
+
+//JSON is nicer to read
+app.get('/api/servicealert/json', async (req, res) => {
+  try {
+    const response = await axios.get(
+      "https://data.waltti.fi/jyvaskyla/api/gtfsrealtime/v1.0/feed/servicealert",
+      {
+        responseType: 'arraybuffer',
+        headers: {
+          Authorization: `Basic ${auth}`,
+        },
+      }
+    )
+    //same as in front end
+    const feed =
+      GtfsRealtimeBindings.transit_realtime.FeedMessage.decode(
+        new Uint8Array(response.data)
+      )
+
+    res.json(feed)
+
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: 'Failed to fetch GTFS data'})
+  }
+})
+
 const PORT = process.env.PORT||3001
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
