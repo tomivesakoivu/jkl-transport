@@ -163,3 +163,59 @@ body {
   font-size: 0.95rem;
   padding: 16px 0;
 }
+
+/* ── Service Alerts ── */
+.alerts-section {
+  margin-top: 24px;
+  width: 100%;
+}
+
+.alerts-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #f0a500;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  user-select: none;
+}
+
+.alerts-toggle {
+  font-size: 0.75rem;
+  margin-left: 6px;
+}
+
+.alerts-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.alert-item {
+  background: #3a2e1a;
+  border-left: 3px solid #f0a500;
+  border-radius: 6px;
+  padding: 10px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.alert-header {
+  font-weight: 600;
+  color: #f5c842;
+  font-size: 0.95rem;
+}
+
+.alert-description {
+  color: #ccc;
+  font-size: 0.9rem;
+}
+
+.alert-stops {
+  color: #888;
+  font-size: 0.8rem;
+  margin-top: 2px;
+}

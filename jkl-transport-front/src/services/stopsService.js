@@ -1,7 +1,6 @@
 import axios from 'axios'
 import API_URL from './api'
 
-// Module-level cache so we only fetch once per page load
 let cachedStops = null
 let cachedRoutes = null
 
@@ -16,7 +15,6 @@ const fetchStops = async () => {
 const fetchRoutes = async () => {
   if (!cachedRoutes) {
     const response = await axios.get(`${API_URL}/api/routes`)
-    // Build a map of route_id -> route_short_name for fast lookup
     cachedRoutes = new Map(
       response.data.map(r => [r.route_id, r.route_short_name])
     )
@@ -24,12 +22,6 @@ const fetchRoutes = async () => {
   return cachedRoutes
 }
 
-/**
- * Returns all stops whose name contains the search string (case-insensitive).
- *
- * @param {string} query
- * @returns {Promise<Array<{stop_id: string, stop_name: string}>>}
- */
 export const searchStopsByName = async (query) => {
   const stops = await fetchStops()
   if (!query) return []
@@ -38,12 +30,6 @@ export const searchStopsByName = async (query) => {
   )
 }
 
-/**
- * Returns the first stop object matching the name (case-insensitive).
- *
- * @param {string} stopName
- * @returns {Promise<{stop_id: string, stop_name: string}|null>}
- */
 export const getStopByName = async (stopName) => {
   const stops = await fetchStops()
   return stops.find(stop =>
@@ -51,25 +37,11 @@ export const getStopByName = async (stopName) => {
   ) ?? null
 }
 
-/**
- * Returns the stop_id for the first stop matching the name (case-insensitive).
- *
- * @param {string} stopName
- * @returns {Promise<string|null>}
- */
-export const getStopIdByName = async (stopName) => {
+export const getStopsMap = async () => {
   const stops = await fetchStops()
-  const match = stops.find(stop =>
-    stop.stop_name.toLowerCase().includes(stopName.toLowerCase())
-  )
-  return match ? match.stop_id : null
+  return new Map(stops.map(s => [String(s.stop_id), s.stop_name]))
 }
 
-/**
- * Returns a Map of route_id -> route_short_name.
- *
- * @returns {Promise<Map<string, string>>}
- */
 export const getRoutesMap = async () => {
   return fetchRoutes()
 }
