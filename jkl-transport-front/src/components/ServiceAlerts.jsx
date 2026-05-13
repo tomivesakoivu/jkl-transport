@@ -28,11 +28,12 @@ const ServiceAlerts = ({ alerts, stopId, stopsMap }) => {
       {visible && (
         <ul className="alerts-list">
           {relevant.map(entity => {
-            const alert = entity.alert
+            const alert = entity?.alert
+            if (!alert) return null
             const header = alert.headerText?.translation?.[0]?.text ?? ''
             const description = alert.descriptionText?.translation?.[0]?.text ?? ''
             const affectedStops = (alert.informedEntity ?? [])
-              .filter(e => e.stopId)
+              .filter(e => e?.stopId)
               .map(e => stopsMap.get(String(e.stopId)) ?? e.stopId)
 
             return (

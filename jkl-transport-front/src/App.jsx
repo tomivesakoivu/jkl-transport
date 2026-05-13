@@ -13,8 +13,9 @@ const App = () => {
   const [selectedStop, setSelectedStop] = useState(null) // { stop_id, stop_name }
   const [routesMap, setRoutesMap] = useState(new Map())
   const [stopsMap, setStopsMap] = useState(new Map())
-
   const [refreshed, setRefreshed] = useState(false)
+  const [tripUpdateLoading, setTripUpdateLoading] = useState(true)
+  const [tripUpdateError, setTripUpdateError] = useState(false)
 
   const getTripUpdate = () => {
     axios
@@ -24,10 +25,16 @@ const App = () => {
           new Uint8Array(response.data)
         )
         setTripUpdates(feed.entity || [])
+        setTripUpdateError(false)
+        setTripUpdateLoading(false)
         setRefreshed(true)
         setTimeout(() => setRefreshed(false), 2000)
       })
-      .catch(console.error)
+      .catch(err => {
+        console.error(err)
+        setTripUpdateError(true)
+        setTripUpdateLoading(false)
+      })
   }
 
   const getServiceAlerts = () => {
@@ -78,6 +85,8 @@ const App = () => {
             stopId={selectedStop.stop_id}
             routesMap={routesMap}
             refreshed={refreshed}
+            loading={tripUpdateLoading}
+            error={tripUpdateError}
           />
         </div>
       )}

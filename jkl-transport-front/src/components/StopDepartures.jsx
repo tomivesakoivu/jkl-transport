@@ -1,15 +1,21 @@
-const PrintStopDepartures = ({ tripUpdates, stopId, routesMap, refreshed }) => {
+const PrintStopDepartures = ({ tripUpdates, stopId, routesMap, refreshed, loading, error }) => {
+  if (loading) return <p className="no-departures">Loading departures...</p>
+  if (error)   return <p className="no-departures error-text">Could not load departures. Retrying...</p>
+
   const stopDepartureMap = new Map()
 
-  for (let i = 0; i < tripUpdates.length; i++) {
-    for (let j = 0; j < tripUpdates[i].tripUpdate.stopTimeUpdate.length - 1; j++) {
-      const update = tripUpdates[i].tripUpdate.stopTimeUpdate[j]
-      if (String(stopId) === String(update.stopId)) {
-        stopDepartureMap.set(
-          tripUpdates[i].tripUpdate.trip.routeId,
-          update.departure.time
-        )
-      }
+  for (const entity of tripUpdates) {
+    const tripUpdate = entity?.tripUpdate
+    if (!tripUpdate?.stopTimeUpdate || !tripUpdate?.trip?.routeId) continue
+
+    for (const update of tripUpdate.stopTimeUpdate) {
+      if (!update?.stopId || !update?.departure?.time) continue
+      if (String(stopId) !== String(update.stopId)) continue
+
+      const time = Number(update.departure.time)
+      if (!Number.isFinite(time) || time <= 0) continue
+
+      stopDepartureMap.set(tripUpdate.trip.routeId, time)
     }
   }
 
@@ -17,15 +23,21 @@ const PrintStopDepartures = ({ tripUpdates, stopId, routesMap, refreshed }) => {
     return <p className="no-departures">No upcoming departures found for this stop.</p>
   }
 
-  // Sort by departure time ascending
-  const sorted = [...stopDepartureMap.entries()].sort((a, b) => a[1] - b[1])
+  const now = Date.now() / 1000
+  const sorted = [...stopDepartureMap.entries()]
+    .filter(([, time]) => time >= now - 60) // drop departures more than 1 min in the past
+    .sort((a, b) => a[1] - b[1])
+
+  if (sorted.length === 0) {
+    return <p className="no-departures">No upcoming departures found for this stop.</p>
+  }
 
   return (
     <>
       <table className="departures-table">
         <thead>
           <tr>
-            <th>Buss Number</th>
+            <th>Bus Number</th>
             <th>Departure</th>
           </tr>
         </thead>
