@@ -5,6 +5,8 @@ const express = require('express')
 const app = express()
 const cors = require('cors')
 const GtfsRealtimeBindings = require('gtfs-realtime-bindings')
+const AdmZip = require('adm-zip')
+const { parse } = require('csv-parse/sync')
 
 app.use(cors())
 
@@ -166,6 +168,59 @@ app.get('/api/servicealert/json', async (req, res) => {
   } catch (err) {
     console.error(err)
     res.status(500).json({ error: 'Failed to fetch GTFS data'})
+  }
+})
+
+// In-memory cache for static GTFS data (shared across endpoints)
+let gtfsCache = null
+
+const getGtfsZip = async () => {
+  if (gtfsCache) return gtfsCache
+
+  console.log('Fetching 209.zip')
+  const response = await axios.get(
+    'https://tvv.fra1.digitaloceanspaces.com/209.zip',
+    { responseType: 'arraybuffer' }
+  )
+  const zip = new AdmZip(Buffer.from(response.data))
+
+  const parseEntry = (name) => {
+    const entry = zip.getEntry(name)
+    if (!entry) throw new Error(`${name} not found in ZIP`)
+    return parse(entry.getData().toString('utf8'), {
+      columns: true,
+      skip_empty_lines: true,
+      trim: true,
+    })
+  }
+
+  gtfsCache = {
+    stops: parseEntry('stops.txt'),
+    routes: parseEntry('routes.txt'),
+  }
+
+  return gtfsCache
+}
+
+// Fetch static GTFS stops from the 209.zip (Jyväskylä)
+app.get('/api/stops', async (req, res) => {
+  try {
+    const { stops } = await getGtfsZip()
+    res.json(stops)
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: 'Failed to fetch or parse GTFS stops' })
+  }
+})
+
+// Fetch static GTFS routes from the 209.zip (Jyväskylä)
+app.get('/api/routes', async (req, res) => {
+  try {
+    const { routes } = await getGtfsZip()
+    res.json(routes)
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: 'Failed to fetch or parse GTFS routes' })
   }
 })
 
