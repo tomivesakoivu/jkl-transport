@@ -1,39 +1,52 @@
 import { useState, useEffect } from 'react'
 import PrintStopDepartures from './components/StopDepartures'
 import StopSearch from './components/StopSearch'
+import ServiceAlerts from './components/ServiceAlerts'
 import GtfsRealtimeBindings from 'gtfs-realtime-bindings'
 import axios from 'axios'
 import API_URL from './services/api'
-import { getRoutesMap, getStopByName } from './services/stopsService'
+import { getRoutesMap, getStopByName, getStopsMap } from './services/stopsService'
 
 const App = () => {
   const [tripUpdates, setTripUpdates] = useState([])
+  const [serviceAlerts, setServiceAlerts] = useState([])
   const [selectedStop, setSelectedStop] = useState(null) // { stop_id, stop_name }
   const [routesMap, setRoutesMap] = useState(new Map())
+  const [stopsMap, setStopsMap] = useState(new Map())
 
   const getTripUpdate = () => {
     axios
-      .get(`${API_URL}/api/tripupdate`, {
-        responseType: "arraybuffer",
-      })
+      .get(`${API_URL}/api/tripupdate`, { responseType: 'arraybuffer' })
       .then(response => {
-        const feed =
-          GtfsRealtimeBindings.transit_realtime.FeedMessage.decode(
-            new Uint8Array(response.data)
-          )
+        const feed = GtfsRealtimeBindings.transit_realtime.FeedMessage.decode(
+          new Uint8Array(response.data)
+        )
         setTripUpdates(feed.entity || [])
       })
       .catch(console.error)
   }
 
+  const getServiceAlerts = () => {
+    axios
+      .get(`${API_URL}/api/servicealert`, { responseType: 'arraybuffer' })
+      .then(response => {
+        const feed = GtfsRealtimeBindings.transit_realtime.FeedMessage.decode(
+          new Uint8Array(response.data)
+        )
+        setServiceAlerts(feed.entity || [])
+      })
+      .catch(console.error)
+  }
+
+  useEffect(() => { getTripUpdate() }, [])
+  useEffect(() => { getServiceAlerts() }, [])
+
   useEffect(() => {
-    getTripUpdate()
+    getRoutesMap().then(setRoutesMap).catch(console.error)
   }, [])
 
   useEffect(() => {
-    getRoutesMap()
-      .then(setRoutesMap)
-      .catch(console.error)
+    getStopsMap().then(setStopsMap).catch(console.error)
   }, [])
 
   useEffect(() => {
@@ -59,6 +72,12 @@ const App = () => {
           />
         </div>
       )}
+
+      <ServiceAlerts
+        alerts={serviceAlerts}
+        stopId={selectedStop?.stop_id}
+        stopsMap={stopsMap}
+      />
     </div>
   )
 }

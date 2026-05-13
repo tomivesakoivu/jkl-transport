@@ -10,25 +10,10 @@ const { parse } = require('csv-parse/sync')
 
 app.use(cors())
 
-//.env file with your API keys from Waltti
 const CLIENT_ID = process.env.CLIENT_ID
 const CLIENT_SECRET = process.env.CLIENT_SECRET
 
 const auth = Buffer.from(`${CLIENT_ID}:${CLIENT_SECRET}`).toString("base64")
-
-/*app.get("/api/staticgtfs", async (req, res) => {
-  try {
-    const response = await axios.get(
-      "https://tvv.fra1.digitaloceanspaces.com/209.zip"
-    )
-    res.send(response.data)
-  } catch (err) {
-    console.error(err)
-    if (!response?.data) {
-      res.status(500).json({ error: "Failed to fetch GTFS data"})
-    }
-  }
-})*/
 
 app.get("/api/tripupdate", async (req, res) => {
   try {
@@ -36,18 +21,13 @@ app.get("/api/tripupdate", async (req, res) => {
       "https://data.waltti.fi/jyvaskyla/api/gtfsrealtime/v1.0/feed/tripupdate",
       {
         responseType: "arraybuffer",
-        headers: {
-          Authorization: `Basic ${auth}`,
-        },
+        headers: { Authorization: `Basic ${auth}` },
       }
     )
-
     res.send(response.data)
   } catch (err) {
     console.error(err)
-    if (!response?.data) {
-      res.status(500).json({ error: "Failed to fetch GTFS data"})
-    }
+    res.status(500).json({ error: "Failed to fetch GTFS data" })
   }
 })
 
@@ -58,22 +38,16 @@ app.get('/api/tripupdate/json', async (req, res) => {
       "https://data.waltti.fi/jyvaskyla/api/gtfsrealtime/v1.0/feed/tripupdate",
       {
         responseType: 'arraybuffer',
-        headers: {
-          Authorization: `Basic ${auth}`,
-        },
+        headers: { Authorization: `Basic ${auth}` },
       }
     )
-    //same as in front end
-    const feed =
-      GtfsRealtimeBindings.transit_realtime.FeedMessage.decode(
-        new Uint8Array(response.data)
-      )
-
+    const feed = GtfsRealtimeBindings.transit_realtime.FeedMessage.decode(
+      new Uint8Array(response.data)
+    )
     res.json(feed)
-
   } catch (err) {
     console.error(err)
-    res.status(500).json({ error: 'Failed to fetch GTFS data'})
+    res.status(500).json({ error: 'Failed to fetch GTFS data' })
   }
 })
 
@@ -83,18 +57,13 @@ app.get("/api/vehicleposition", async (req, res) => {
       "https://data.waltti.fi/jyvaskyla/api/gtfsrealtime/v1.0/feed/vehicleposition",
       {
         responseType: "arraybuffer",
-        headers: {
-          Authorization: `Basic ${auth}`,
-        },
+        headers: { Authorization: `Basic ${auth}` },
       }
     )
-
     res.send(response.data)
   } catch (err) {
     console.error(err)
-    if (!response?.data) {
-      res.status(500).json({ error: "Failed to fetch GTFS data"})
-    }
+    res.status(500).json({ error: "Failed to fetch GTFS data" })
   }
 })
 
@@ -105,22 +74,16 @@ app.get('/api/vehicleposition/json', async (req, res) => {
       "https://data.waltti.fi/jyvaskyla/api/gtfsrealtime/v1.0/feed/vehicleposition",
       {
         responseType: 'arraybuffer',
-        headers: {
-          Authorization: `Basic ${auth}`,
-        },
+        headers: { Authorization: `Basic ${auth}` },
       }
     )
-    //same as in front end
-    const feed =
-      GtfsRealtimeBindings.transit_realtime.FeedMessage.decode(
-        new Uint8Array(response.data)
-      )
-
+    const feed = GtfsRealtimeBindings.transit_realtime.FeedMessage.decode(
+      new Uint8Array(response.data)
+    )
     res.json(feed)
-
   } catch (err) {
     console.error(err)
-    res.status(500).json({ error: 'Failed to fetch GTFS data'})
+    res.status(500).json({ error: 'Failed to fetch GTFS data' })
   }
 })
 
@@ -130,18 +93,13 @@ app.get("/api/servicealert", async (req, res) => {
       "https://data.waltti.fi/jyvaskyla/api/gtfsrealtime/v1.0/feed/servicealert",
       {
         responseType: "arraybuffer",
-        headers: {
-          Authorization: `Basic ${auth}`,
-        },
+        headers: { Authorization: `Basic ${auth}` },
       }
     )
-
     res.send(response.data)
   } catch (err) {
     console.error(err)
-    if (!response?.data) {
-      res.status(500).json({ error: "Failed to fetch GTFS data"})
-    }
+    res.status(500).json({ error: "Failed to fetch GTFS data" })
   }
 })
 
@@ -152,26 +110,19 @@ app.get('/api/servicealert/json', async (req, res) => {
       "https://data.waltti.fi/jyvaskyla/api/gtfsrealtime/v1.0/feed/servicealert",
       {
         responseType: 'arraybuffer',
-        headers: {
-          Authorization: `Basic ${auth}`,
-        },
+        headers: { Authorization: `Basic ${auth}` },
       }
     )
-    //same as in front end
-    const feed =
-      GtfsRealtimeBindings.transit_realtime.FeedMessage.decode(
-        new Uint8Array(response.data)
-      )
-
+    const feed = GtfsRealtimeBindings.transit_realtime.FeedMessage.decode(
+      new Uint8Array(response.data)
+    )
     res.json(feed)
-
   } catch (err) {
     console.error(err)
-    res.status(500).json({ error: 'Failed to fetch GTFS data'})
+    res.status(500).json({ error: 'Failed to fetch GTFS data' })
   }
 })
 
-// In-memory cache for static GTFS data (shared across endpoints)
 let gtfsCache = null
 
 const getGtfsZip = async () => {
@@ -202,7 +153,6 @@ const getGtfsZip = async () => {
   return gtfsCache
 }
 
-// Fetch static GTFS stops from the 209.zip (Jyväskylä)
 app.get('/api/stops', async (req, res) => {
   try {
     const { stops } = await getGtfsZip()
@@ -213,7 +163,6 @@ app.get('/api/stops', async (req, res) => {
   }
 })
 
-// Fetch static GTFS routes from the 209.zip (Jyväskylä)
 app.get('/api/routes', async (req, res) => {
   try {
     const { routes } = await getGtfsZip()
@@ -224,7 +173,7 @@ app.get('/api/routes', async (req, res) => {
   }
 })
 
-const PORT = process.env.PORT||3001
+const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })
