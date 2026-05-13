@@ -14,6 +14,8 @@ const App = () => {
   const [routesMap, setRoutesMap] = useState(new Map())
   const [stopsMap, setStopsMap] = useState(new Map())
 
+  const [refreshed, setRefreshed] = useState(false)
+
   const getTripUpdate = () => {
     axios
       .get(`${API_URL}/api/tripupdate`, { responseType: 'arraybuffer' })
@@ -22,6 +24,8 @@ const App = () => {
           new Uint8Array(response.data)
         )
         setTripUpdates(feed.entity || [])
+        setRefreshed(true)
+        setTimeout(() => setRefreshed(false), 2000)
       })
       .catch(console.error)
   }
@@ -38,7 +42,11 @@ const App = () => {
       .catch(console.error)
   }
 
-  useEffect(() => { getTripUpdate() }, [])
+  useEffect(() => {
+    getTripUpdate()
+    const interval = setInterval(getTripUpdate, 15000)
+    return () => clearInterval(interval)
+  }, [])
   useEffect(() => { getServiceAlerts() }, [])
 
   useEffect(() => {
@@ -69,6 +77,7 @@ const App = () => {
             tripUpdates={tripUpdates}
             stopId={selectedStop.stop_id}
             routesMap={routesMap}
+            refreshed={refreshed}
           />
         </div>
       )}

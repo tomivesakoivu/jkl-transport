@@ -219,3 +219,25 @@ body {
   font-size: 0.8rem;
   margin-top: 2px;
 }
+
+/* ── Refresh indicator ── */
+.refresh-indicator {
+  text-align: center;
+  font-size: 0.75rem;
+  color: #6ea8fe;
+  margin-top: 6px;
+  opacity: 0;
+  transition: opacity 0.3s ease-in;
+}
+
+.refresh-indicator.refresh-visible {
+  opacity: 1;
+  transition: opacity 0.3s ease-in;
+  animation: fadeout 2s forwards;
+}
+
+@keyframes fadeout {
+  0%   { opacity: 1; }
+  60%  { opacity: 1; }
+  100% { opacity: 0; }
+}

@@ -1,4 +1,4 @@
-const PrintStopDepartures = ({ tripUpdates, stopId, routesMap }) => {
+const PrintStopDepartures = ({ tripUpdates, stopId, routesMap, refreshed }) => {
   const stopDepartureMap = new Map()
 
   for (let i = 0; i < tripUpdates.length; i++) {
@@ -21,27 +21,32 @@ const PrintStopDepartures = ({ tripUpdates, stopId, routesMap }) => {
   const sorted = [...stopDepartureMap.entries()].sort((a, b) => a[1] - b[1])
 
   return (
-    <table className="departures-table">
-      <thead>
-        <tr>
-          <th>Buss Number</th>
-          <th>Departure</th>
-        </tr>
-      </thead>
-      <tbody>
-        {sorted.map(([routeId, time]) => (
-          <tr key={routeId}>
-            <td>{routesMap.get(routeId) ?? routeId}</td>
-            <td>
-              {new Date(time * 1000).toLocaleTimeString('fi-FI', {
-                hour: '2-digit',
-                minute: '2-digit',
-              })}
-            </td>
+    <>
+      <table className="departures-table">
+        <thead>
+          <tr>
+            <th>Buss Number</th>
+            <th>Departure</th>
           </tr>
-        ))}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {sorted.map(([routeId, time]) => (
+            <tr key={routeId}>
+              <td>{routesMap.get(routeId) ?? routeId}</td>
+              <td>
+                {new Date(time * 1000).toLocaleTimeString('fi-FI', {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                })}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <p className={`refresh-indicator ${refreshed ? 'refresh-visible' : ''}`}>
+        Refreshed
+      </p>
+    </>
   )
 }
 
