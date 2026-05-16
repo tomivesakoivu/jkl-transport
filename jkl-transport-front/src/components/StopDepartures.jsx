@@ -7,7 +7,12 @@ const PrintStopDepartures = ({ tripUpdates, stopId, routesMap, refreshed, loadin
   const sorted = buildDepartures(tripUpdates, stopId)
 
   if (sorted.length === 0) {
-    return <p className="no-departures">No upcoming departures found for this stop.</p>
+    return (
+      <>
+        <p className="no-departures">No upcoming departures found for this stop.</p>
+        <p className={`refresh-indicator ${refreshed ? 'refresh-visible' : ''}`}>Refreshed</p>
+      </>
+    )
   }
 
   return (

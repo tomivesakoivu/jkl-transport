@@ -17,7 +17,6 @@ const App = () => {
   const [tripUpdateLoading, setTripUpdateLoading] = useState(true)
   const [tripUpdateError, setTripUpdateError] = useState(false)
   const [feedTimestamp, setFeedTimestamp] = useState(null) // from feed header
-  const [lastFetchTime, setLastFetchTime] = useState(null) // local time of last successful fetch
 
   const getTripUpdate = () => {
     axios
@@ -30,7 +29,6 @@ const App = () => {
         setTripUpdateError(false)
         setTripUpdateLoading(false)
         setRefreshed(true)
-        setLastFetchTime(new Date())
         if (feed.header?.timestamp) {
           setFeedTimestamp(Number(feed.header.timestamp))
         }
