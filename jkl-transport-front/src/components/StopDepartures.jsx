@@ -1,32 +1,10 @@
+import { buildDepartures } from '../utils/departures'
+
 const PrintStopDepartures = ({ tripUpdates, stopId, routesMap, refreshed, loading, error }) => {
   if (loading) return <p className="no-departures">Loading departures...</p>
   if (error)   return <p className="no-departures error-text">Could not load departures. Retrying...</p>
 
-  const stopDepartureMap = new Map()
-
-  for (const entity of tripUpdates) {
-    const tripUpdate = entity?.tripUpdate
-    if (!tripUpdate?.stopTimeUpdate || !tripUpdate?.trip?.routeId) continue
-
-    for (const update of tripUpdate.stopTimeUpdate) {
-      if (!update?.stopId || !update?.departure?.time) continue
-      if (String(stopId) !== String(update.stopId)) continue
-
-      const time = Number(update.departure.time)
-      if (!Number.isFinite(time) || time <= 0) continue
-
-      stopDepartureMap.set(tripUpdate.trip.routeId, time)
-    }
-  }
-
-  if (stopDepartureMap.size === 0) {
-    return <p className="no-departures">No upcoming departures found for this stop.</p>
-  }
-
-  const now = Date.now() / 1000
-  const sorted = [...stopDepartureMap.entries()]
-    .filter(([, time]) => time >= now - 60) // drop departures more than 1 min in the past
-    .sort((a, b) => a[1] - b[1])
+  const sorted = buildDepartures(tripUpdates, stopId)
 
   if (sorted.length === 0) {
     return <p className="no-departures">No upcoming departures found for this stop.</p>
