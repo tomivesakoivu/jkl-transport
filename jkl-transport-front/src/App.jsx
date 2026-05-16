@@ -16,6 +16,8 @@ const App = () => {
   const [refreshed, setRefreshed] = useState(false)
   const [tripUpdateLoading, setTripUpdateLoading] = useState(true)
   const [tripUpdateError, setTripUpdateError] = useState(false)
+  const [feedTimestamp, setFeedTimestamp] = useState(null) // from feed header
+  const [lastFetchTime, setLastFetchTime] = useState(null) // local time of last successful fetch
 
   const getTripUpdate = () => {
     axios
@@ -28,6 +30,10 @@ const App = () => {
         setTripUpdateError(false)
         setTripUpdateLoading(false)
         setRefreshed(true)
+        setLastFetchTime(new Date())
+        if (feed.header?.timestamp) {
+          setFeedTimestamp(Number(feed.header.timestamp))
+        }
         setTimeout(() => setRefreshed(false), 2000)
       })
       .catch(err => {
@@ -72,6 +78,15 @@ const App = () => {
 
   return (
     <div className="app">
+      <div className={`freshness-bar ${tripUpdateError ? 'freshness-bar--error' : ''}`}>
+        {tripUpdateError
+          ? 'Feed unavailable — showing last known data'
+          : feedTimestamp
+            ? `Feed updated: ${new Date(feedTimestamp * 1000).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}`
+            : 'Connecting...'
+        }
+      </div>
+
       <h1 className="app-title">Jyväskylä Public Transport</h1>
       <p className="app-subtitle">Stop Schedules</p>
 

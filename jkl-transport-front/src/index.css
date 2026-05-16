@@ -245,3 +245,17 @@ body {
   60%  { opacity: 1; }
   100% { opacity: 0; }
 }
+
+/* ── Freshness bar ── */
+.freshness-bar {
+  width: 100%;
+  text-align: center;
+  font-size: 0.75rem;
+  color: #888;
+  padding: 4px 0 2px;
+  letter-spacing: 0.03em;
+}
+
+.freshness-bar--error {
+  color: #f87171;
+}
