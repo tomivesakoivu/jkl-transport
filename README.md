@@ -86,8 +86,6 @@ jkl-transport/
 
 ### Prerequisites
 
-### Prerequisites
-
 - [Node.js](https://nodejs.org/) v18 or higher (developed on v24)
 - npm (comes with Node.js)
 - Waltti API credentials — register at [opendata.waltti.fi](https://opendata.waltti.fi) to get a `CLIENT_ID` and `CLIENT_SECRET`
