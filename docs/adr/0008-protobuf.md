@@ -12,12 +12,11 @@ Real-time transit data from Waltti arrives in binary format using Protocol Buffe
 
 ## Decision Outcome
 
-Chosen option: "Decode protobuf on backend, send JSON to frontend", because it centralizes the decoding complexity, reduces frontend dependencies, and provides a consistent REST API interface.
+Chosen option: "Send raw protobuf binary to frontend, decode in browser", because the decoding on the frontend was already working and moving it to the backend wasn't feasible with available human resources.
 
 ### Consequences
 
-* Good, because backend handles protobuf decoding complexity (using gtfs-realtime-bindings)
-* Good, because frontend receives simple JSON, no binary parsing needed
-* Good, because REST API is standard and easy to debug
-* Bad, because requires gtfs-realtime-bindings dependency
-
+* Good, because backend stays thin
+* Good, because gtfs-realtime-bindings works in the browser
+* Bad, because frontend depends now on the gtfs-realtime-bindings
+* Bad, because parsing in the frontend requires a bit more than revieving the JSON staright
